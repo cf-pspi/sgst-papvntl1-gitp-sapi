@@ -1,55 +1,57 @@
 #%RAML 1.0
 title: SGST PAPVNTL1 GITP SAPI
 version: 1.0
-description: Process API to handle the material management operations
+description: System API to handle the PAPVNTL1 GITP-MQ operations
 
-types:
-  ediFileDetails: !include exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/datatypes-library/1.0.10/dataTypes/datatype-edi-msg-header.raml
-
-  transactionId: 
-    properties:
-      transactionId:
-        type: string
-        required: true
-        example: "62af3fbd-f0f6-4f28-9986-f201f5b76d5c"
+uses:
+  gitpRequest: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/datatypes-library/1.0.14/datatypes-library.raml
+  traitsLib: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/traits-library/1.0.6/traits-library.raml
 
 /purchase-orders:
   displayName: purchase orders
   description: resource is used for accepting the Purchase Orders file from SAP and sending it to EPRO and IPS
   post:
+    is:
+      - traitsLib.hasContentType
+      - traitsLib.hasResponses
+      - traitsLib.hasClientIdEnforcement
     body:
       application/json:
-        type: 
-          - ediFileDetails
-          - transactionId
+        type: gitpRequest.GITPMessage
 
 /purchase-results:
   displayName: purchase results
   description: resource is used for accepting the Purchase Results file from SAP and sending it to ECITA
   post:
+    is:
+      - traitsLib.hasContentType
+      - traitsLib.hasResponses
+      - traitsLib.hasClientIdEnforcement
     body:
       application/json:
-        type: 
-          - ediFileDetails
-          - transactionId
+        type: gitpRequest.GITPMessage
 
 
 /fpl:
   displayName: fpl data
   description: resource is used for accepting the FPL file from SAP and sending it to Sales EDI
   post:
+    is:
+      - traitsLib.hasContentType
+      - traitsLib.hasResponses
+      - traitsLib.hasClientIdEnforcement
     body:
       application/json:
-        type: 
-          - ediFileDetails
-          - transactionId
+        type: gitpRequest.GITPMessage
 
 /ar-statements:
   displayName: ar statements
   description: resource is used for accepting the AR Statement file from SAP and sending it to CMS
   post:
+    is:
+      - traitsLib.hasContentType
+      - traitsLib.hasResponses
+      - traitsLib.hasClientIdEnforcement
     body:
       application/json:
-        type: 
-          - ediFileDetails
-          - transactionId
+        type: gitpRequest.GITPMessage

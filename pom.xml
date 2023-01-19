@@ -37,6 +37,7 @@
 							<artifactId>com.ibm.mq.allclient</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
+					<classifier>mule-application</classifier>
 				</configuration>
 			</plugin>
 			<plugin>
