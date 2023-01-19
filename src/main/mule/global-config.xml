@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<!-- <configuration-properties doc:name="Configuration properties" doc:id="25c05da0-330c-4801-8837-37d6c66ead2d" file="properties\local.yaml" /> -->
 	 <apikit:config name="sgst-papvntl1-gitp-sapi-config" api="sgst-papvntl1-gitp-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	 <json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="05be9735-f922-4a03-87ce-6d6d1a542c58" environment="${mule.env}" />
-	 <http:listener-config name="sgst-orders-edi-eapi-httpListenerConfig">
+	 <http:listener-config name="sgst-papvntl1-gitp-sapi-httpListenerConfig">
         <http:listener-connection host="${http.host}" port="${http.port}" readTimeout="${http.ReadTimeout}" protocol="HTTPS">
 			<tls:context >
 				<tls:key-store type="jks" path="${http.keystore.path}" alias="${http.keystore.alias}" keyPassword="${http.keystore.password}" password="${http.keystore.password}" />
