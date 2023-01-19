@@ -9,8 +9,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
-	<sub-flow name="sgst-papvntl1-implSub_Flow" doc:id="5300f6f0-2fe7-45fd-bcd1-706e42c6c845" >
-	</sub-flow>
 	<sub-flow name="sgst-papvntl1-impl-flow" doc:id="3d8f2c80-c488-4d59-8f13-c0e80ba36917" >
 		<ee:transform doc:name="Initialize - Vairables" doc:id="7ed01eff-3472-4963-b134-9b7b620330e0">
 					<ee:message>
