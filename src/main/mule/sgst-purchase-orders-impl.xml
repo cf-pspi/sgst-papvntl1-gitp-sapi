@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="sgst-purchase-orders-impl-flow" doc:id="3d8f2c80-c488-4d59-8f13-c0e80ba36917" >
+		<ee:transform doc:name="Initialize - Vairables" doc:id="7ed01eff-3472-4963-b134-9b7b620330e0">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="senderCode"><![CDATA[%dw 2.0
+output application/java
+---
+"${senderCode.papvntl1}"]]></ee:set-variable>
+				<ee:set-variable resource="dwl/eventAuditMessage.dwl" variableName="eventAuditMessage" />
+				<ee:set-variable variableName="TransactionID" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.transactionId]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<json-logger:logger doc:name="Log Initial Status" doc:id="3c58bb94-4b10-44e1-8c22-3882d883894a" config-ref="JSON_Logger_Config" message='#["Start of the transaction for correlation Id " ++ vars.TransactionID]'>
+			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<flow-ref doc:name="sgst-object-store-retrievekeylist-impl-flow" doc:id="7ee2529b-af31-46b5-aa7e-2b16d50fba84" name="sgst-object-store-retrievekeylist-impl-flow" />
+		<foreach doc:name="For Each" doc:id="c6025a04-eacc-4f75-b60f-0d7660b00156" collection="#[vars.objectStoreKeyList]">
+					<flow-ref doc:name="sgst-object-store-retrieve-impl-flow" doc:id="38c6c6d5-d87d-4069-9076-4daf0afa4055" name="sgst-object-store-retrieve-impl-flow" />
+					<ee:transform doc:name="Append Header" doc:id="d9c313da-0d95-4fd1-bc14-3a472295b58c">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/java
+---
+((({
+	"System Field": "                        ",
+	"Application ID Co": "  ",
+	"Data Type Cod": "",
+	"System Field": "    ",
+	"Test Type": "T ",
+	"Receiver Code": "                ",
+	"Sender Code": (rightPad(vars.senderCode,16," "))[0 to 15],
+	"System Field": "                     ",
+	"Continuation Type": if(vars.counter == vars.ObjectStoreCount) "0" else "1",
+	"Total number of message split": leftPad(vars.ObjectStoreCount,3,0),
+	"Message Sequence Number": leftPad(vars.counter,2,0),
+	"System Field": "                                                    "
+}) pluck $) joinBy "") ++ "\n" ++ payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<flow-ref doc:name="sgst-papvn_tl1-gitp-sapi-sub-flow" doc:id="febb822e-28ef-4802-b5c1-b78d71991b4b" name="sgst-papvn_tl1-gitp-sapi-sub-flow" />
+				</foreach>
+		<foreach doc:name="For Each" doc:id="fc62fb38-917a-4acc-a7a8-6cd86663a57c" collection="#[vars.objectStoreKeyList]">
+			<flow-ref doc:name="sgst-object-store-delete-impl-flow" doc:id="26ecc55d-50c0-4956-8e8e-ce238104bd8d" name="sgst-object-store-delete-impl-flow"/>
+		</foreach>
+		<ee:transform doc:name="Frame - Response" doc:id="1e5499cc-b936-4aa6-9e6d-971ce0205b06">
+			<ee:message>
+				<ee:set-payload resource="dwl/responsePayload.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

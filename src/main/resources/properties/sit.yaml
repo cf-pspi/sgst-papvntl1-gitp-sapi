@@ -1,0 +1,63 @@
+#env properties
+mule:
+  env: sit
+
+#API Manager config
+api:
+  autodiscovery:
+    id: ''
+  flowDirection: 'outbound'
+  source: 'Orders-PAPI'
+
+#IBM MQ Properties
+ibmMQ:
+  papvntl1:
+    host: '133.184.33.2'
+    port: '1434'
+    queueManager: 'GW4_JP'
+    channel: 'CS352.TO.GW4_JP'
+    queueName: 'GW4.DS352.DAT.RCV'
+
+#Object Store Properties
+http:
+  ob:
+    tokenURL: 'https://anypoint.mulesoft.com/accounts/oauth2/token'
+    client_id: 'ADAM_INTEGRATIONS_70c31b81-0200-4c54-b4d8-a1fb71429742'
+    client_secret: '89174a83790845f386bbc25c06D7Cf71'
+    host: 'object-store-ap-southeast-1.anypoint.mulesoft.com'
+    port: '443'
+    basePath: '/api/v1'
+    keyListPath: '/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys'
+    keyValuePath: 'api/v1/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys/{keyId}'
+    orgId: '69195e0c-f771-4438-a4b2-58237c4947b6'
+    envId: '62eee220-fe29-44e0-b5cf-199884ed311b'
+    storeId: 'APP_7f533f31-08b8-4a39-bf08-c77cdd42cd4e__defaultPersistentObjectStore'
+    partitionId: 'FileStore_Object_Store'
+
+  keystore:
+    path: 'keystores/${mule.env}-keystore.jks'
+    alias: 'servercert'
+    password: 'winter@123'
+
+  utilities:    
+    papi:
+      client_id: 'cb6fea3d3d814a43a7042b301698194d'
+      client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+      host: 'sgst-audit-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+      port: '8081'   
+      basepath: '/api/v1'
+      path:
+        backup: '/backup'
+        notification: '/notification'
+
+#Notification Configuration
+notification:
+  email:
+    toaddress: ['sabeena.shaik@sg.panasonic.com','pavan.ramadugula@sg.panasonic.com','umamaheswara.karanam@sg.panasonic.com']
+
+json:
+  logger:
+    application:
+      version: '1.0'
+      name: 'sample-json-logger'
+    env: 'local'

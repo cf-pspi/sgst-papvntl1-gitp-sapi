@@ -1,0 +1,29 @@
+#HTTP config
+http:
+  port: "8081"
+  host: "0.0.0.0"
+  path: "/api/v1/*"
+  ReadTimeout: "30000"
+  pcs:   
+      max:      
+          connections: '-1'
+      connections:    
+          idle:    
+              timeout: '60000'
+          timeout: '60000'
+      response:    
+          timeout: '30000'
+          buffer:    
+              size: '1024'
+      reconnection:
+         frequency: '2000'
+         count: '2'
+
+#Sender Code
+senderCode:
+  papvntl1: "00027011"
+ 
+
+
+
+   
