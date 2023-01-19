@@ -18,10 +18,6 @@ http:
       reconnection:
          frequency: '2000'
          count: '2'
-
-#Sender Code
-senderCode:
-  papvntl1: "00027011"
  
 
 

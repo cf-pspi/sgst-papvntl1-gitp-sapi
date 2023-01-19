@@ -28,7 +28,7 @@ http:
     port: '443'
     basePath: '/api/v1'
     keyListPath: '/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys'
-    keyValuePath: 'api/v1/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys/{keyId}'
+    keyValuePath: '/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys/{keyId}'
     orgId: '69195e0c-f771-4438-a4b2-58237c4947b6'
     envId: '62eee220-fe29-44e0-b5cf-199884ed311b'
     storeId: 'APP_7f533f31-08b8-4a39-bf08-c77cdd42cd4e__defaultPersistentObjectStore'

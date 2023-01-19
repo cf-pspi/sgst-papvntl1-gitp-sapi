@@ -9,20 +9,22 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="sgst-papvntl1-implSub_Flow" doc:id="5300f6f0-2fe7-45fd-bcd1-706e42c6c845" >
+	</sub-flow>
 	<sub-flow name="sgst-papvntl1-impl-flow" doc:id="3d8f2c80-c488-4d59-8f13-c0e80ba36917" >
 		<ee:transform doc:name="Initialize - Vairables" doc:id="7ed01eff-3472-4963-b134-9b7b620330e0">
 					<ee:message>
 					</ee:message>
 					<ee:variables>
-						<ee:set-variable variableName="senderCode"><![CDATA[%dw 2.0
-output application/java
----
-"${senderCode.papvntl1}"]]></ee:set-variable>
 				<ee:set-variable resource="dwl/eventAuditMessage.dwl" variableName="eventAuditMessage" />
 				<ee:set-variable variableName="TransactionID" ><![CDATA[%dw 2.0
 output application/java
 ---
 payload.transactionId]]></ee:set-variable>
+				<ee:set-variable resource="dwl/dataTypeCode.dwl" variableName="dataTypeCode" />
+				<ee:set-variable resource="dwl/applicationCode.dwl" variableName="applicationIdCode" />
+				<ee:set-variable resource="dwl/senderCode.dwl" variableName="senderCode" />
+				<ee:set-variable resource="dwl/sapiHttpPath.dwl" variableName="sapiHttpPath" />
 					</ee:variables>
 				</ee:transform>
 		<json-logger:logger doc:name="Log Initial Status" doc:id="3c58bb94-4b10-44e1-8c22-3882d883894a" config-ref="JSON_Logger_Config" message='#["Start of the transaction for correlation Id " ++ vars.TransactionID]'>
@@ -34,12 +36,19 @@ payload.transactionId]]></ee:set-variable>
 		<flow-ref doc:name="sgst-object-store-retrievekeylist-impl-flow" doc:id="7ee2529b-af31-46b5-aa7e-2b16d50fba84" name="sgst-object-store-retrievekeylist-impl-flow" />
 		<foreach doc:name="For Each" doc:id="c6025a04-eacc-4f75-b60f-0d7660b00156" collection="#[vars.objectStoreKeyList]">
 					<flow-ref doc:name="sgst-object-store-retrieve-impl-flow" doc:id="38c6c6d5-d87d-4069-9076-4daf0afa4055" name="sgst-object-store-retrieve-impl-flow" />
-					<ee:transform doc:name="Append Header" doc:id="d9c313da-0d95-4fd1-bc14-3a472295b58c">
+			<ee:transform doc:name="Set Header" doc:id="b995506c-053c-4f79-ad7d-afd3500d1ba6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable resource="dwl/fileHeader.dwl" variableName="fileHeader" />
+				</ee:variables>
+			</ee:transform>
+			<ee:transform doc:name="Append Header" doc:id="d9c313da-0d95-4fd1-bc14-3a472295b58c">
 						<ee:message>
-					<ee:set-payload resource="appendHeader.dwl" />
+					<ee:set-payload resource="dwl/appendHeader.dwl" />
 						</ee:message>
 					</ee:transform>
-					<flow-ref doc:name="sgst-papvn_tl1-gitp-sapi-sub-flow" doc:id="febb822e-28ef-4802-b5c1-b78d71991b4b" name="sgst-papvn_tl1-gitp-sapi-sub-flow" />
+			<flow-ref doc:name="sgst-papvn_tl1-gitp-sapi-sub-flow" doc:id="febb822e-28ef-4802-b5c1-b78d71991b4b" name="sgst-papvn_tl1-gitp-sapi-sub-flow" />
 				</foreach>
 		<foreach doc:name="For Each" doc:id="fc62fb38-917a-4acc-a7a8-6cd86663a57c" collection="#[vars.objectStoreKeyList]">
 			<flow-ref doc:name="sgst-object-store-delete-impl-flow" doc:id="26ecc55d-50c0-4956-8e8e-ce238104bd8d" name="sgst-object-store-delete-impl-flow"/>
