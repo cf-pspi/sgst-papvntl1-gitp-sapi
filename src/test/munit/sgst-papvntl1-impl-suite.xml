@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sgst-papvntl1-impl-suite.xml" />
+	<munit:test name="sgst-papvntl1-impl-flow-test" doc:id="3d7762ef-b898-4d95-a134-fe6cb7393b12" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock object-store-retrieve-keylist" doc:id="8feff640-bc81-4a4d-9f66-c59ae68580bf" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get KeyList" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="8aab7ea7-047d-4da4-a6e5-c63aab0b55c3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json  --- readUrl('classpath://sgstpapvntl1implflowtest/mock_keylist_payload.dwl')]" mediaType="application/json " encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock retrieve object-store-key" doc:id="f44229e8-cd6b-429d-b602-11201f231052" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get ObjectStore KeyValue" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json  --- readUrl('classpath://sgstpapvntl1implflowtest/mock_retrieve_objectstore.dwl')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock delete object-store" doc:id="fca04459-52c7-4e4a-9ab3-809cb62e1f2e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Delete OB Key Value" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock papvntl1 publish" doc:id="8ad68770-6d65-4adf-b147-c9858d0a9300" processor="ibm-mq:publish">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Publish" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="0a927de5-b5ce-4d1d-85f2-ede2c1ac244f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="5d87e813-9eff-430f-8bc6-e1de970237d9" >
+				<munit:payload value="#[output application/json  --- readUrl('classpath://sgstpapvntl1implflowtest/set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json " />
+				<munit:attributes value="#[readUrl('classpath://sgstpapvntl1implflowtest/set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to sgst-papvntl1-impl-flow" doc:id="87e0b160-f268-492d-8181-d213a1b7e36d" name="sgst-papvntl1-impl-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a951b5a6-9acf-4205-b446-13f41f1c3db1" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import sgstpapvntl1implflowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+</mule>

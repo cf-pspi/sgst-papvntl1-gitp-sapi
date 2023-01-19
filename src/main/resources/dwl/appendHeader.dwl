@@ -1,5 +1,5 @@
 %dw 2.0
 import * from dw::core::Strings
-output application/java
+output text/plain
 ---
-vars.fileHeader ++ "\n" ++ payload
+payload
