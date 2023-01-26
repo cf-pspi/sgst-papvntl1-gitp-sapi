@@ -2,4 +2,4 @@
 import * from dw::core::Strings
 output text/plain
 ---
-payload
+vars.fileHeader ++ payload

@@ -13,6 +13,23 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/ibm-mq http://www.mulesoft.org/schema/mule/ibm-mq/current/mule-ibm-mq.xsd
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
 	<sub-flow name="sgst-object-store-retrievekeylist-impl-flow" doc:id="adb7721a-bf52-4178-975f-9913943d196c" >
+		<json-logger:logger doc:name="Log KeyList" doc:id="f592ca67-9526-42d8-8e2f-01263fc11a5c" config-ref="JSON_Logger_Config" message="Initiated Get KeyList from ObjectStore V2 REST API." tracePoint="BEFORE_REQUEST">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<http:request method="GET" doc:name="Get KeyList" doc:id="8aab7ea7-047d-4da4-a6e5-c63aab0b55c3" config-ref="HTTP_Request_ObjectStore_configuration" path="${http.ob.keyListPath}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -31,14 +48,49 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 				<ee:set-variable resource="dwl/objectStoreKeyList.dwl" variableName="objectStoreKeyList" />
 			</ee:variables>
 		</ee:transform>
-		<json-logger:logger doc:name="Log KeyList" doc:id="be379090-b4f1-4808-8439-356fc261a162" config-ref="JSON_Logger_Config" message='#["Retrieve ObjectStore KeyList is Successful for correlation Id " ++ vars.TransactionID]' tracePoint="AFTER_REQUEST">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log KeyList" doc:id="be379090-b4f1-4808-8439-356fc261a162" config-ref="JSON_Logger_Config" message='Call to Get KeyList from ObjectStore V2 REST API Completed Successfully.' tracePoint="AFTER_REQUEST">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-object-store-retrieve-impl-flow" doc:id="940404f8-7869-4412-a131-117a183045ea" >
+		<ee:transform doc:name="Set StoreId" doc:id="b54214a4-352f-4381-a1d7-678c3519f202" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/storeId.dwl" variableName="storeId" />
+			</ee:variables>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Store Object" doc:id="43449681-541a-4766-8ea3-cf30e1083fb8" config-ref="JSON_Logger_Config" message='#["Initiated Retrieve KeyValue from ObjectStore V2 REST API for storeId: " ++ vars.storeId]' tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<http:request method="GET" doc:name="Get ObjectStore KeyValue" doc:id="efb3c4eb-2107-43ad-b520-fa1969edb5cd" config-ref="HTTP_Request_ObjectStore_configuration" path="${http.ob.keyValuePath}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -55,14 +107,49 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 				<ee:set-payload resource="dwl/obsResponse.dwl" />
 			</ee:message>
 		</ee:transform>
-		<json-logger:logger doc:name="Log ObjectStore Retrieve" doc:id="0793dd90-527c-4501-936e-6669370b3400" config-ref="JSON_Logger_Config" message='#["Retrieve ObjectSotre key value is Successful for correlation Id " ++ vars.TransactionID]' tracePoint="AFTER_REQUEST">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log Store Object" doc:id="c6597512-fcb9-4377-9cc8-f49213191626" config-ref="JSON_Logger_Config" message='#["Call to Retrieve KeyValue from ObjectStore V2 REST API Completed Successfully for storeId: " ++ vars.storeId]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-object-store-delete-impl-flow" doc:id="67660907-4701-49b9-952a-43d415acc31a" >
+		<ee:transform doc:name="Set StoreId" doc:id="f03d9117-a7a2-4fd0-9a87-599f272f60ed" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl/deleteStoreId.dwl" variableName="deleteStoreId" />
+			</ee:variables>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Delete ObjectStore" doc:id="c83adbfd-ab88-4fe9-82a0-83b2edb9d554" config-ref="JSON_Logger_Config" message='#["Initiated Delete StoreDetails from ObjectStore V2 REST API for storeId: " ++ vars.deleteStoreId]' tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<http:request method="DELETE" doc:name="Delete OB Key Value" doc:id="1acd6b6e-cef2-4132-b18c-57a478ed9dda" config-ref="HTTP_Request_ObjectStore_configuration" path="${http.ob.keyValuePath}">
 			<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -74,10 +161,21 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	"keyId": payload
 }]]]></http:uri-params>
 		</http:request>
-		<json-logger:logger doc:name="Log Delete ObjectStore" doc:id="24481112-11dc-4dbf-8d12-221413e4d992" config-ref="JSON_Logger_Config" message='#["Delete ObjectStore key is Successful for correlation Id " ++ vars.TransactionID]' tracePoint="AFTER_REQUEST">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log Delete ObjectStore" doc:id="354c0e9b-a8ba-457d-80fa-3da67311f562" config-ref="JSON_Logger_Config" message='#["Call to Delete StoreDetails from ObjectStore V2 REST API Completed Successfully for storeId: " ++ vars.deleteStoreId]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
@@ -87,11 +185,39 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 				<ee:set-payload resource="dwl/mqPublishRequest.dwl" />
 			</ee:message>
 		</ee:transform>
-		<ibm-mq:publish doc:name="Publish" doc:id="0a927de5-b5ce-4d1d-85f2-ede2c1ac244f" config-ref="IBM_MQ_PAPVNTL1_Config" destination="${ibmMQ.papvntl1.queueName}"/>
-		<json-logger:logger doc:name="Log Publish Message" doc:id="0d0de72f-b5af-4315-a567-b250fda6bbea" config-ref="JSON_Logger_Config" message='#["Publish Message to IBM MQ is Successful for correlation Id " ++ vars.TransactionID]' tracePoint="AFTER_REQUEST">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log Publish Message" doc:id="e3faf0c2-690c-4dad-a262-e0614bed97de" config-ref="JSON_Logger_Config" message="Initiated Publish message to IBMMQ." tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ibm-mq:publish doc:name="Publish" doc:id="0a927de5-b5ce-4d1d-85f2-ede2c1ac244f" config-ref="IBM_MQ_PAPVNTL1_Config" destination="${ibmMQ.papvntl1.queueName}"/>
+		<json-logger:logger doc:name="Log Publish Message" doc:id="0d0de72f-b5af-4315-a567-b250fda6bbea" config-ref="JSON_Logger_Config" message='Call to Publish message to IBMMQ Completed Successfully.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>

@@ -120,18 +120,14 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<sub-flow name="global-config-propagate-error" doc:id="ac437bba-650b-4d88-a9d9-cf4126d8f072" >
 		<ee:transform doc:name="Frame Error Message" doc:id="24d2c1d3-dcb8-481d-8f5b-31f1a0a112fe">
 				<ee:message>
+				<ee:set-payload resource="dwl/errorResponse.dwl" />
 
 				</ee:message>
 			<ee:variables >
-				<ee:set-variable resource="dwl/errorResponse.dwl" variableName="errorDetails" />
 			</ee:variables>
 			
 </ee:transform>
-		<json-logger:logger doc:name="Logger" doc:id="ea86e8e2-bdd5-4756-951e-d7e7376e26f9" config-ref="JSON_Logger_Config" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="EXCEPTION" priority="ERROR">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
-{
-    payload: JSONLoggerModule::stringifyNonJSON(vars.errorDetails) 
-}]]]></json-logger:content>
+		<json-logger:logger doc:name="Log Exception Details" doc:id="ea86e8e2-bdd5-4756-951e-d7e7376e26f9" config-ref="JSON_Logger_Config" message='Exception occurred processing the transaction' tracePoint="EXCEPTION" priority="ERROR" correlationId="#[vars.TransactionID]">
 		</json-logger:logger>
 	
 </sub-flow>
@@ -155,6 +151,23 @@ var seperator = "/"
  ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<json-logger:logger doc:name="Log Email Notification" doc:id="e2b83163-67ca-47b1-b1a2-7562b0877a01" config-ref="JSON_Logger_Config" message="Initiated Send Email Notification." tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<http:request method="POST" doc:name="send-email-notification" doc:id="70b994f8-735c-4ef2-a04b-b08ff8ff2649" config-ref="HTTP_Request_For_PAPI_Audit" path="${http.utilities.papi.path.notification}" outputMimeType="application/json">
 			<http:headers ><![CDATA[#[output application/java
 ---
@@ -164,5 +177,22 @@ var seperator = "/"
 "X-Client-Secret": Mule::p('http.utilities.papi.client_secret')
 }]]]></http:headers>
 		</http:request>
+		<json-logger:logger doc:name="Log Email Notification" doc:id="c0b4ec3f-a577-43a9-9eaf-7fed22f5d8a2" config-ref="JSON_Logger_Config" message="Call to Send Email Notification Completed Successfully." tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
+}]]]></json-logger:content>
+		</json-logger:logger>
 	</sub-flow>
 </mule>
