@@ -32,7 +32,7 @@ http:
     orgId: '69195e0c-f771-4438-a4b2-58237c4947b6'
     envId: '62eee220-fe29-44e0-b5cf-199884ed311b'
     storeId: 'APP_358a56d7-94c9-4233-b04a-67c23ec7820e__defaultPersistentObjectStore'
-    partitionId: 'ObjectStore_GITP_PAPVNTL1'
+    partitionId: 'ObjStore_Outbound_GITP_PAPVNTL1'
 
   keystore:
     path: 'keystores/${mule.env}-keystore.jks'
