@@ -35,7 +35,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<configuration doc:name="Configuration" doc:id="de615457-ca54-4818-8f6e-2e1c8463ad76" defaultErrorHandler-ref="common-exception-handler" />
 	<configuration-properties doc:name="Configuration properties" doc:id="4118f3bf-9aba-42c8-8468-fc9f23e459ff" file="properties\common.yaml" />
 	<ibm-mq:config name="IBM_MQ_PAPVNTL1_Config" doc:name="IBM MQ Config" doc:id="94b6973b-bb22-443a-86c8-e1c0645901bc" >
-		<ibm-mq:connection >
+		<ibm-mq:connection specification="JMS_1_1" targetClient="NO_JMS_COMPLIANT">
 			<ibm-mq:connection-mode >
 				<ibm-mq:client host="${ibmMQ.papvntl1.host}" port="${ibmMQ.papvntl1.port}" queueManager="${ibmMQ.papvntl1.queueManager}" channel="${ibmMQ.papvntl1.channel}" />
 			</ibm-mq:connection-mode>

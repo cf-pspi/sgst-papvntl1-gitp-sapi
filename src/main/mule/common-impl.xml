@@ -209,11 +209,6 @@ output application/json
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-papvn_tl1-gitp-sapi-sub-flow" doc:id="9fd7ca1e-8cd8-43e2-a87a-b08c14de11f5" >
-		<ee:transform doc:name="Set Request" doc:id="ccaf49bf-f4e8-4aa1-89d5-653f695c9879" >
-			<ee:message >
-				<ee:set-payload resource="dwl/mqPublishRequest.dwl" />
-			</ee:message>
-		</ee:transform>
 		<json-logger:logger doc:name="Log Publish Message" doc:id="e3faf0c2-690c-4dad-a262-e0614bed97de" config-ref="JSON_Logger_Config" message="Initiated Publish message to IBMMQ." tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
 			<json-logger:content ><![CDATA[#[%dw 2.0
 output application/json
@@ -231,7 +226,15 @@ output application/json
    "status": Mule::p('api.status.initiate')
 }]]]></json-logger:content>
 		</json-logger:logger>
-		<ibm-mq:publish doc:name="Publish" doc:id="0a927de5-b5ce-4d1d-85f2-ede2c1ac244f" config-ref="IBM_MQ_PAPVNTL1_Config" destination="${ibmMQ.papvntl1.queueName}"/>
+		<ibm-mq:publish doc:name="Publish" doc:id="0a927de5-b5ce-4d1d-85f2-ede2c1ac244f" config-ref="IBM_MQ_PAPVNTL1_Config" destination="${ibmMQ.papvntl1.queueName}">
+			<ibm-mq:message jmsType="JMSBytesMessage" outboundContentType="application/octet-stream">
+				<ibm-mq:body ><![CDATA[#[%dw 2.0
+output application/java
+---
+payload  as Binary {class : "byte[]"}]]]></ibm-mq:body>
+				<ibm-mq:properties ><![CDATA[#[{"JMS_IBM_Format": ''}]]]></ibm-mq:properties>
+			</ibm-mq:message>
+		</ibm-mq:publish>
 		<json-logger:logger doc:name="Log Publish Message" doc:id="0d0de72f-b5af-4315-a567-b250fda6bbea" config-ref="JSON_Logger_Config" message='Call to Publish message to IBMMQ Completed Successfully.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
 			<json-logger:content ><![CDATA[#[%dw 2.0
 output application/json
