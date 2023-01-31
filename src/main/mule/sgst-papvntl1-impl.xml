@@ -23,6 +23,10 @@ payload.transactionId]]></ee:set-variable>
 				<ee:set-variable resource="dwl/senderCode.dwl" variableName="senderCode" />
 				<ee:set-variable resource="dwl/sapiHttpPath.dwl" variableName="sapiHttpPath" />
 				<ee:set-variable resource="dwl/fileDetails.dwl" variableName="fileDetails" />
+				<ee:set-variable variableName="objectStoreKeyList" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 		<json-logger:logger doc:name="Log Initial Status" doc:id="3c58bb94-4b10-44e1-8c22-3882d883894a" config-ref="JSON_Logger_Config" message='Received API request.' correlationId="#[vars.TransactionID]">
@@ -43,6 +47,14 @@ output application/json
 }]]]></json-logger:content>
 		</json-logger:logger>
 		<flow-ref doc:name="sgst-object-store-retrievekeylist-impl-flow" doc:id="7ee2529b-af31-46b5-aa7e-2b16d50fba84" name="sgst-object-store-retrievekeylist-impl-flow" />
+		<ee:transform doc:name="ObjectStore KeyList" doc:id="3671758c-f2e9-4e9e-bd2d-89f5e22cc37a">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="dwl/objectStoreCount.dwl" variableName="ObjectStoreCount" />
+				<ee:set-variable resource="dwl/objectStoreKeyList.dwl" variableName="objectStoreKeyList" />
+			</ee:variables>
+		</ee:transform>
 		<foreach doc:name="For Each" doc:id="c6025a04-eacc-4f75-b60f-0d7660b00156" collection="#[vars.objectStoreKeyList]">
 					<flow-ref doc:name="sgst-object-store-retrieve-impl-flow" doc:id="38c6c6d5-d87d-4069-9076-4daf0afa4055" name="sgst-object-store-retrieve-impl-flow" />
 			<ee:transform doc:name="Set Header" doc:id="b995506c-053c-4f79-ad7d-afd3500d1ba6" >

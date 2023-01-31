@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</tls:context>
 		</http:listener-connection>
     </http:listener-config>
-	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="bc5f4b4c-7303-4988-9784-4190dd3eae28" flowRef="sgst-pp-rationalization-edi-eapi-main" /> -->
+	<api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="bc5f4b4c-7303-4988-9784-4190dd3eae28" flowRef="sgst-papvntl1-gitp-sapi-main" />
 	<global-property doc:name="Global Property" doc:id="74c4c474-7c89-46ef-8f62-85afac19625e" name="mule.env" value="sit" />
 	<configuration-properties doc:name="Configuration properties" doc:id="057932e3-90cf-4dec-86a0-627e71a0055d" file="properties/${mule.env}.yaml" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="db4504d2-4231-4906-875a-1cbdd1f6fe3a" file="properties/${mule.env}.yaml" key="${secret.key}" />

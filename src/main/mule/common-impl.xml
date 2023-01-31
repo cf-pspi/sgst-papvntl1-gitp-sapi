@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
-	xmlns:ibm-mq="http://www.mulesoft.org/schema/mule/ibm-mq"
-	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:os="http://www.mulesoft.org/schema/mule/os"
-	xmlns:compression="http://www.mulesoft.org/schema/mule/compression"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ibm-mq="http://www.mulesoft.org/schema/mule/ibm-mq" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/ibm-mq http://www.mulesoft.org/schema/mule/ibm-mq/current/mule-ibm-mq.xsd
-http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<sub-flow name="sgst-object-store-retrievekeylist-impl-flow" doc:id="adb7721a-bf52-4178-975f-9913943d196c" >
 		<json-logger:logger doc:name="Log KeyList" doc:id="f592ca67-9526-42d8-8e2f-01263fc11a5c" config-ref="JSON_Logger_Config" message="Initiated Get KeyList from ObjectStore V2 REST API." tracePoint="BEFORE_REQUEST">
 			<json-logger:content ><![CDATA[#[%dw 2.0
@@ -31,7 +32,7 @@ output application/json
 }]]]></json-logger:content>
 		</json-logger:logger>
 		<http:request method="GET" doc:name="Get KeyList" doc:id="8aab7ea7-047d-4da4-a6e5-c63aab0b55c3" config-ref="HTTP_Request_ObjectStore_configuration" path="${http.ob.keyListPath}">
-			<http:uri-params ><![CDATA[#[output application/java
+			<http:uri-params><![CDATA[#[output application/java
 ---
 {
 	"orgId" : "${http.ob.orgId}",
@@ -39,15 +40,43 @@ output application/json
 	"storeId": "${http.ob.storeId}",
 	"partitionId": "${http.ob.partitionId}"
 }]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	("nextPageToken" : vars.nextPageToken) if(not isEmpty(vars.nextPageToken))
+}]]]></http:query-params>
 		</http:request>
-		<ee:transform doc:name="ObjectStore KeyList" doc:id="3671758c-f2e9-4e9e-bd2d-89f5e22cc37a" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable resource="dwl/objectStoreCount.dwl" variableName="ObjectStoreCount" />
-				<ee:set-variable resource="dwl/objectStoreKeyList.dwl" variableName="objectStoreKeyList" />
-			</ee:variables>
-		</ee:transform>
+		<choice doc:name="Choice" doc:id="5362a0d0-9923-4903-9057-70d3634a0535" >
+			<when expression="#[not isEmpty(payload.nextPageToken)]">
+				<ee:transform doc:name="Append KeyList" doc:id="25d998c9-12f0-4723-9807-4979cd3850b2" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="objectStoreKeyList" ><![CDATA[%dw 2.0
+output application/java
+---
+flatten(vars.objectStoreKeyList ++ payload.values)]]></ee:set-variable>
+						<ee:set-variable variableName="nextPageToken" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.nextPageToken]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="sgst-object-store-retrievekeylist-impl-flow" doc:id="ba9440ab-662e-486a-a709-9476011f2056" name="sgst-object-store-retrievekeylist-impl-flow"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Set objectStoreKeyList" doc:id="ae990796-5b16-43e4-a1b1-043574306f7b" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="objectStoreKeyList" ><![CDATA[%dw 2.0
+output application/java
+---
+flatten(vars.objectStoreKeyList ++ payload.values)]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
 		<json-logger:logger doc:name="Log KeyList" doc:id="be379090-b4f1-4808-8439-356fc261a162" config-ref="JSON_Logger_Config" message='Call to Get KeyList from ObjectStore V2 REST API Completed Successfully.' tracePoint="AFTER_REQUEST">
 			<json-logger:content ><![CDATA[#[%dw 2.0
 output application/json

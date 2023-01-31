@@ -5,7 +5,7 @@ mule:
 #API Manager config
 api:
   autodiscovery:
-    id: ''
+    id: '18461623'
   flowDirection: 'outbound'
   source: 'Orders-PAPI'
 
@@ -53,7 +53,7 @@ http:
 #Notification Configuration
 notification:
   email:
-    toaddress: ['sabeena.shaik@sg.panasonic.com','pavan.ramadugula@sg.panasonic.com','umamaheswara.karanam@sg.panasonic.com']
+    toaddress: ['pavan.ramadugula@sg.panasonic.com']
 
 json:
   logger:
