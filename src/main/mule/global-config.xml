@@ -24,7 +24,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	 <http:listener-config name="sgst-papvntl1-gitp-sapi-httpListenerConfig">
         <http:listener-connection host="${http.host}" port="${http.port}" readTimeout="${http.ReadTimeout}" protocol="HTTPS">
 			<tls:context >
-				<tls:key-store type="jks" path="${http.keystore.path}" alias="${http.keystore.alias}" keyPassword="${http.keystore.password}" password="${http.keystore.password}" />
+				<tls:key-store type="jks" path="${http.keystore.path}" alias="${http.keystore.alias}" keyPassword="${secure::http.keystore.password}" password="${secure::http.keystore.password}" />
 			</tls:context>
 		</http:listener-connection>
     </http:listener-config>
@@ -57,7 +57,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<http:request-config name="HTTP_Request_ObjectStore_configuration" doc:name="HTTP Request configuration" doc:id="6cd02c16-d19b-430d-a45f-f9ee119da7c2" basePath="${http.ob.basePath}" >
 		<http:request-connection host="${http.ob.host}" port="${http.ob.port}" protocol="HTTPS">
 			<http:authentication >
-				<oauth:client-credentials-grant-type clientId="${http.ob.client_id}" clientSecret="${http.ob.client_secret}" tokenUrl="${http.ob.tokenURL}" />
+				<oauth:client-credentials-grant-type clientId="${http.ob.client_id}" clientSecret="${secure::http.ob.client_secret}" tokenUrl="${http.ob.tokenURL}" />
 			</http:authentication>
 		</http:request-connection>
 	</http:request-config>

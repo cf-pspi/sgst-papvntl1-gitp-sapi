@@ -22,8 +22,8 @@ ibmMQ:
 http:
   ob:
     tokenURL: 'https://anypoint.mulesoft.com/accounts/oauth2/token'
-    client_id: 'ADAM_INTEGRATIONS_358a56d7-94c9-4233-b04a-67c23ec7820e'
-    client_secret: 'B9E634C412344aA282E950E9Fc814856'
+    client_id: 'ADAM_INTEGRATIONS_1a44a619-4e75-48f8-903d-48864d973cce'
+    client_secret: '![XXjAlnQaeEJUEPLNOC5bzYB6v04gfJgARrl081xIR8ItlA+OfgxHZVW+spC0sq+D]'
     host: 'object-store-ap-southeast-1.anypoint.mulesoft.com'
     port: '443'
     basePath: '/api/v1'
@@ -31,19 +31,19 @@ http:
     keyValuePath: '/organizations/{orgId}/environments/{envId}/stores/{storeId}/partitions/{partitionId}/keys/{keyId}'
     orgId: '69195e0c-f771-4438-a4b2-58237c4947b6'
     envId: '62eee220-fe29-44e0-b5cf-199884ed311b'
-    storeId: 'APP_358a56d7-94c9-4233-b04a-67c23ec7820e__defaultPersistentObjectStore'
+    storeId: 'APP_1a44a619-4e75-48f8-903d-48864d973cce__defaultPersistentObjectStore'
     partitionId: 'ObjStore_Outbound_GITP_PAPVNTL1'
 
   keystore:
     path: 'keystores/${mule.env}-keystore.jks'
     alias: 'servercert'
-    password: 'winter@123'
+    password: '![jZ9aFIvsIbzo/rVxKqDOdQ==]'
 
   utilities:    
     papi:
       client_id: 'cb6fea3d3d814a43a7042b301698194d'
       client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-      host: 'sgst-audit-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+      host: 'sgst-audit-papi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
       port: '8081'   
       basepath: '/api/v1'
       path:
