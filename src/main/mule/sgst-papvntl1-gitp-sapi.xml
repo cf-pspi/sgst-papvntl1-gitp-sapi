@@ -32,7 +32,7 @@
     <flow name="post:\fpl:application\json:sgst-papvntl1-gitp-sapi-config">
         <flow-ref doc:name="sgst-papvntl1-impl-flow" doc:id="367bef45-d35e-41b6-bd82-5eaf277b1a79" name="sgst-papvntl1-impl-flow" />
     </flow>
-    <flow name="post:\purchase-orders:application\json:sgst-papvntl1-gitp-sapi-config">
+    <flow name="post:\purchase-orders:application\json:sgst-papvntl1-gitp-sapi-config" doc:id="92259489-3f8e-45a6-b045-f586dc7fe9d3">
         <flow-ref doc:name="sgst-papvntl1-impl-flow" doc:id="236bd807-c577-4489-8097-c8e05c1c5cc0" name="sgst-papvntl1-impl-flow" />
     </flow>
     <flow name="post:\purchase-results:application\json:sgst-papvntl1-gitp-sapi-config">

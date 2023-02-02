@@ -41,19 +41,6 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</ibm-mq:connection-mode>
 		</ibm-mq:connection>
 	</ibm-mq:config>
-	<http:request-config name="HTTP_Request_For_PAPI_Audit" doc:name="HTTP Request configuration" doc:id="67928bb7-3dc9-4315-b514-f0ea3908776a" basePath="${http.utilities.papi.basepath}">
-		<http:request-connection host="${http.utilities.papi.host}" maxConnections="${http.pcs.max.connections}" connectionIdleTimeout="${http.pcs.connections.idle.timeout}" responseBufferSize="${http.pcs.response.buffer.size}" protocol="HTTPS">
-			<reconnection >
-				<reconnect frequency="${http.pcs.reconnection.frequency}" count="${http.pcs.reconnection.count}" />
-			</reconnection>
-			<tls:context >
-				<tls:trust-store insecure="true" />
-			</tls:context>
-			<http:client-socket-properties >
-				<sockets:tcp-client-socket-properties connectionTimeout="${http.pcs.connections.timeout}" />
-			</http:client-socket-properties>
-		</http:request-connection>
-	</http:request-config>
 	<http:request-config name="HTTP_Request_ObjectStore_configuration" doc:name="HTTP Request configuration" doc:id="6cd02c16-d19b-430d-a45f-f9ee119da7c2" basePath="${http.ob.basePath}" >
 		<http:request-connection host="${http.ob.host}" port="${http.ob.port}" protocol="HTTPS">
 			<http:authentication >
@@ -65,9 +52,6 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<error-handler name="common-exception-handler" doc:id="c65de37b-031a-45e4-ad71-eeea6f2645f1" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="73db5dc1-662c-42f8-b09e-f51f9d6b00fb" type="COMPRESSION:COULD_NOT_DECOMPRESS, COMPRESSION:INVALID_ARCHIVE, COMPRESSION:TOO_MANY_ENTRIES" >
 			<flow-ref doc:name="global-config-propagate-error" doc:id="c64ce6c9-d239-47c0-9723-722326d56add" name="global-config-propagate-error"/>
-			<async doc:name="Async" doc:id="225517dc-b0e3-43ec-a50a-a8363478cadf" >
-				<flow-ref doc:name="global-config-email-notification" doc:id="e40ad38a-8bab-4e5c-b6e0-a2a82a5d14cd" name="global-config-email-notification" />
-			</async>
 		
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2d0bf340-6854-49d1-8ff9-6936a53039f5" type="APIKIT:BAD_REQUEST">
@@ -104,16 +88,10 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6b68b168-33ec-4a77-aa62-541d0b00a7e2" type="HTTP:GATEWAY_TIMEOUT">
 			<flow-ref doc:name="global-config-propagate-error" doc:id="0048d407-ef22-48bc-a30a-0734e7b051e5" name="global-config-propagate-error"/>
-			<async doc:name="Async" doc:id="03886191-d6e2-4319-80bc-30e0dea7de00" >
-				<flow-ref doc:name="global-config-email-notification" doc:id="14ed8ce0-b1fd-4cff-aef3-8a93ef34c0b0" name="global-config-email-notification" />
-			</async>
 		
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="da0ff3d4-938e-48b1-9f70-3b650664b014" type="ANY">
 			<flow-ref doc:name="global-config-propagate-error" doc:id="98ca189e-153e-40d2-a16f-a45c73e75fcd" name="global-config-propagate-error"/>
-			<async doc:name="Async" doc:id="733c23b3-d80a-466e-bc6e-3e25cd07f6e8">
-			<flow-ref doc:name="global-config-email-notification" doc:id="954cd157-f345-44e1-9274-b75dcfd92d10" name="global-config-email-notification" />
-		</async>
 		
 </on-error-propagate>
 	</error-handler>
@@ -131,68 +109,4 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 		</json-logger:logger>
 	
 </sub-flow>
-	<sub-flow name="global-config-email-notification" doc:id="ef821d89-d1b5-4d4a-9a19-9f187a65c45a" >
-		<ee:transform doc:name="Set Request" doc:id="506226f0-766a-4cb8-9af7-8a393fb1917b" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-var seperator = "/"
----
-{
-    "apiName": app.name default "",
-    "correlationID": vars.TransactionID default "",
-    "toAddress": Mule::p('notification.email.toaddress') default [],
-    "fileName": vars.fileDetails.flatFileName default "NA",
-    "filePath": ("/" ++ Mule::p('api.flowDirection')  ++ "/" ++ lower(vars.fileDetails.subsidiary) ++ "/" ++ lower(vars.fileDetails.externalSystem) ++ vars.sapiHttpPath  ++ "/" ++ lower(vars.fileDetails.flatFileName) ++ "." ++ vars.fileDetails.flatFileExtension) as String,
-    "errorDetails":{
-        "errorCode":payload.errorCode default "",
-        "errorDesc":payload.errorMessage default ""
-   }}
- ]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<json-logger:logger doc:name="Log Email Notification" doc:id="e2b83163-67ca-47b1-b1a2-7562b0877a01" config-ref="JSON_Logger_Config" message="Initiated Send Email Notification." tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[%dw 2.0
-output application/json
----
-{
-   "flowDirection": Mule::p('api.flowDirection'),
-   "source": Mule::p('api.source'),
-   "target": vars.fileDetails.externalSystem default "",
-   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
-   "errorCode": "",
-   "errorMessage": "",
-   "subsidiary": vars.fileDetails.subsidiary,
-   "apiName": Mule::p('json.logger.application.name'),
-   "action": Mule::p('api.action.call-api'),
-   "status": Mule::p('api.status.initiate')
-}]]]></json-logger:content>
-		</json-logger:logger>
-		<http:request method="POST" doc:name="send-email-notification" doc:id="70b994f8-735c-4ef2-a04b-b08ff8ff2649" config-ref="HTTP_Request_For_PAPI_Audit" path="${http.utilities.papi.path.notification}" outputMimeType="application/json">
-			<http:headers ><![CDATA[#[output application/java
----
-{
-
-"X-Client-ID": Mule::p('http.utilities.papi.client_id'),
-"X-Client-Secret": Mule::p('http.utilities.papi.client_secret')
-}]]]></http:headers>
-		</http:request>
-		<json-logger:logger doc:name="Log Email Notification" doc:id="c0b4ec3f-a577-43a9-9eaf-7fed22f5d8a2" config-ref="JSON_Logger_Config" message="Call to Send Email Notification Completed Successfully." tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[%dw 2.0
-output application/json
----
-{
-   "flowDirection": Mule::p('api.flowDirection'),
-   "source": Mule::p('api.source'),
-   "target": vars.fileDetails.externalSystem default "",
-   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
-   "errorCode": "",
-   "errorMessage": "",
-   "subsidiary": vars.fileDetails.subsidiary,
-   "apiName": Mule::p('json.logger.application.name'),
-   "action": Mule::p('api.action.call-api'),
-   "status": Mule::p('api.status.success')
-}]]]></json-logger:content>
-		</json-logger:logger>
-	</sub-flow>
 </mule>

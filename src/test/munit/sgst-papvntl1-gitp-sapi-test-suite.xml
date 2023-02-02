@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sgst-papvntl1-gitp-sapi-test-suite.xml" />
+	<munit:test name="sgst-papvntl1-gitp-sapi-test-suite-post:\purchase-results:application\json:sgst-papvntl1-gitp-sapi-configTest" doc:id="b42d92b5-c79e-4e4b-93d8-596f9f29f213" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock sgst-papvntl1-impl-flow" doc:id="54f22218-98a5-4dc7-9228-9033144e9125" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\purchase-results:application\json:sgst-papvntl1-gitp-sapi-config" doc:id="2aced44c-6f47-4995-a8d0-3516b1992ca8" name="post:\purchase-results:application\json:sgst-papvntl1-gitp-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="1b5c4400-e6b0-42ef-a0b0-f9cc2e6bab2f" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sgst-papvntl1-gitp-sapi-test-suite-post:\fpl:application\json:sgst-papvntl1-gitp-sapi-configTest" doc:id="87e18fbd-422c-4a4f-b0d6-a66682fe7129" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock sgst-papvntl1-impl-flow" doc:id="61f884e4-1f9e-47fd-a047-c1b82a797d41" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\fpl:application\json:sgst-papvntl1-gitp-sapi-config" doc:id="bc28e154-5ad4-4504-b033-2f44fc4045e3" name="post:\fpl:application\json:sgst-papvntl1-gitp-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="62219fb5-ca08-4b87-af0a-f028f2d5c86a" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sgst-papvntl1-gitp-sapi-test-suite-post:\ar-statements:application\json:sgst-papvntl1-gitp-sapi-configTest" doc:id="2d86c05b-7dd5-4528-9098-955eb6e20c6c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock sgst-papvntl1-impl-flow" doc:id="d802a015-aff8-4c10-8d04-091134cd29ea" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\ar-statements:application\json:sgst-papvntl1-gitp-sapi-config" doc:id="4e05f254-2b1e-489d-95f5-3e65db6be228" name="post:\ar-statements:application\json:sgst-papvntl1-gitp-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="11f2d9c4-8f1f-4377-9a90-f64d44b0d183" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sgst-papvntl1-impl-flow" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

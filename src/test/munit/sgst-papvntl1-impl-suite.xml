@@ -44,7 +44,7 @@
 			</munit:set-event>
 		</munit:behavior>
 		<munit:execution >
-			<flow-ref doc:name="Flow-ref to sgst-papvntl1-impl-flow" doc:id="87e0b160-f268-492d-8181-d213a1b7e36d" name="sgst-papvntl1-impl-flow"/>
+			<flow-ref doc:name="post:\purchase-orders:application\json:sgst-papvntl1-gitp-sapi-config" doc:id="87e0b160-f268-492d-8181-d213a1b7e36d" name="post:\purchase-orders:application\json:sgst-papvntl1-gitp-sapi-config"/>
 		</munit:execution>
 		<munit:validation >
 			<munit-tools:assert doc:name="Assert payload" doc:id="a951b5a6-9acf-4205-b446-13f41f1c3db1" message="The payload does not match">
